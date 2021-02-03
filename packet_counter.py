@@ -1,6 +1,5 @@
 import collectd
 import json
-import time
 
 PATH = '/proc/udp_tcp_counter'
 
@@ -18,17 +17,22 @@ def config_func(config):
             PATH = val
             path_set = True
         elif key == 'servers':
-            servers = servers.replace(';', '\n')
+            servers = val.replace(';', '\n')
+   
+            collectd.info('packet_counter plugin servers: "%s"' % servers)
         else:
             collectd.info('packet_counter plugin: Unknown config key "%s"' % key)
-    with open(PATH, 'w') as f:
-        f.write(servers)
+    
 
     if path_set:
         collectd.info('packet_counter plugin: Using overridden path %s' % PATH)
     else:
         collectd.info('packet_counter plugin: Using default path %s' % PATH)
     
+    servers += '\n'
+    # with open('/root/test', 'w') as f:
+    #     f.write(servers)    
+
 
 
 
@@ -47,6 +51,7 @@ def read_func():
         val.values = [values[key]]
         val.plugin = 'packet_counter'
         val.dispatch()
+
 
 
 collectd.register_config(config_func)
