@@ -1,12 +1,12 @@
 import collectd
-import json
+import json, time
 
 PATH = '/proc/udp_tcp_counter'
 
 
 def config_func(config):
     path_set = False
-    servers = ''
+    servers = []
 
     for node in config.children:
         key = node.key.lower()
@@ -16,10 +16,9 @@ def config_func(config):
             global PATH
             PATH = val
             path_set = True
-        elif key == 'servers':
-            servers = val.replace(';', '\n')
-   
-            collectd.info('packet_counter plugin servers: "%s"' % servers)
+        elif key == 'server':
+            servers.append(val)
+            # todo: penso ci sia qualche problema con la formattazione del testo
         else:
             collectd.info('packet_counter plugin: Unknown config key "%s"' % key)
     
@@ -29,9 +28,24 @@ def config_func(config):
     else:
         collectd.info('packet_counter plugin: Using default path %s' % PATH)
     
-    servers += '\n'
-    # with open('/root/test', 'w') as f:
-    #     f.write(servers)    
+    servers = [
+    "151.13.131.57 3000",
+    "151.13.131.57 2003",
+    "130.192.181.193 80",
+    "130.192.181.193 443",
+    "216.58.198.3 443",
+    "216.58.198.3 80",
+    "192.168.1.55 80",
+    "192.168.1.55 8096"
+]
+
+    collectd.info('packet_counter plugin servers: "%s"' % servers)
+    with open(PATH, 'w') as f:
+        for server in servers:
+            f.write(server + '\n')
+            # todo: non so se sia utile, ma ogni tanto evita crash
+            time.sleep(0.1)
+
 
 
 
