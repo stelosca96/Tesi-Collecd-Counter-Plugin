@@ -29,8 +29,6 @@ def config_func(config):
         collectd.info('packet_counter plugin: Using default path %s' % PATH)
     
     servers = [
-    "151.13.131.57 3000",
-    "151.13.131.57 2003",
     "130.192.181.193 80",
     "130.192.181.193 443",
     "216.58.198.3 443",
